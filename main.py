@@ -77,7 +77,24 @@ def metodos(y, mes):
 
     return {k: np.clip(v, 0, None) for k, v in aux.items()}
 
-#- Ejemplo de uso: se elige un SKU y un método para imprimir su pronóstico a H meses, partiendo del último mes disponible en el pivote.
-sku = piv.columns[0]
-met = "combinacion"
-print(metodos(piv[sku].values, piv.index[-1].month)[met])
+# BACKTEST: simulación del paso del tiempo.
+filas = []
+for sku in piv:
+    v = piv[sku].values
+    for corte in range(MIN_TRAIN, len(v) - H +1): 
+        # -> Recorre los puntos de corte posibles: cada corte usa los primeros `corte` meses como entrenamiento y los H meses siguientes como prueba.
+        tr, real = v[:corte], v[corte:corte + H]
+        # -> tr es el historial disponible hasta el corte (lo que el modelo "conoce") y real son los H meses siguientes, que se usan para evaluar el pronóstico.
+        escala = np.mean(np.abs(tr[M:] - tr[:-M]))      # error del naive estacional (para MASE)
+        for met, fc in metodos(tr, piv.index[corte - 1].month).items():
+            # -> Recorre cada método (hw, sarima, grupo, media_3, media_12, s_naive, combinacion) y su pronóstico fc de H meses; el MASE compara el error absoluto medio contra `real` y lo divide por la escala del naive estacional, de modo que un valor menor a 1 supera al naive.
+            for paso in range(H):
+                filas.append({"sku": sku, "corte": corte, "metodo": met, "mase": np.mean(np.abs(real - fc)) / escala})
+# -> Convierte la lista de filas en un DataFrame para poder agrupar y comparar los métodos.
+r = pd.DataFrame(filas, columns=['SKU', 'metodo', 'paso', 'err', 'escala'])
+# -> Escala cada error absoluto por el error del naive estacional (MASE); luego se promedia por método y SKU en una tabla pivote.
+r['mase'] = r.err.abs() / r.escala
+# -> Cada celda de la tabla resume el MASE promedio de un método para un SKU a lo largo de todos los cortes y pasos del backtest.
+mase = r.pivot_table(index='metodo', columns='SKU', values='mase')
+print('=== MASE por método (menor es mejor; 1.0 = naive estacional) ===')
+print(mase.assign(PROMEDIO=mase.mean(axis=1)).sort_values('PROMEDIO').round(3), '\n')
