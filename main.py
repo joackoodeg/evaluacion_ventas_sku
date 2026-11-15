@@ -118,3 +118,9 @@ for sku, met in mase.idxmin(axis=0).items():
 
 salida = pd.DataFrame(salida)
 print(salida.to_string(index=False))
+
+# Gráficos
+from graficos import grafico_pronostico, grafico_mase
+grafico_pronostico(piv, salida)
+grafico_mase(mase)
+plt.show()
