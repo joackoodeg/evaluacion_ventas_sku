@@ -89,7 +89,9 @@ for sku in piv:
         for met, fc in metodos(tr, piv.index[corte - 1].month).items():
             # -> Recorre cada método (hw, sarima, grupo, media_3, media_12, s_naive, combinacion) y su pronóstico fc de H meses; el MASE compara el error absoluto medio contra `real` y lo divide por la escala del naive estacional, de modo que un valor menor a 1 supera al naive.
             for paso in range(H):
-                filas.append({"sku": sku, "corte": corte, "metodo": met, "mase": np.mean(np.abs(real - fc)) / escala})
+                # -> err = real - pronóstico (con signo), para luego armar el intervalo empírico p10/p90.
+                filas.append({"SKU": sku, "corte": corte, "metodo": met, "paso": paso + 1,
+                              "err": real[paso] - fc[paso], "escala": escala})
 # -> Convierte la lista de filas en un DataFrame para poder agrupar y comparar los métodos.
 r = pd.DataFrame(filas, columns=['SKU', 'metodo', 'paso', 'err', 'escala'])
 # -> Escala cada error absoluto por el error del naive estacional (MASE); luego se promedia por método y SKU en una tabla pivote.
@@ -98,3 +100,21 @@ r['mase'] = r.err.abs() / r.escala
 mase = r.pivot_table(index='metodo', columns='SKU', values='mase')
 print('=== MASE por método (menor es mejor; 1.0 = naive estacional) ===')
 print(mase.assign(PROMEDIO=mase.mean(axis=1)).sort_values('PROMEDIO').round(3), '\n')
+
+
+# PRONOSTICOS FINALES
+salida = []
+for sku, met in mase.idxmin(axis=0).items():
+    # -> Para cada SKU toma el método con menor MASE promedio (met) y lo reentrena con todo el historial disponible para generar el pronóstico de los H meses futuros.
+    fc = metodos(piv[sku].values, piv.index[-1].month)[met]
+    # -> Guarda el pronóstico de cada uno de los H meses futuros junto con el SKU y el método ganador, para armar la tabla final de salida.
+    for paso, (mes,val) in enumerate(zip(MESES,fc),1):
+        # -> Agrega una fila por cada mes futuro con el SKU, el método ganador, el número de paso, el nombre del mes y el pronóstico redondeado.
+        e = r[(r.SKU == sku) & (r.metodo == met) & (r.paso == paso)].err
+        # -> Suma al pronóstico los percentiles 10 y 90 de los errores históricos de ese método, SKU y paso (e) para construir un intervalo empírico (del 80%); el límite inferior se trunca en 0 porque no puede haber ventas negativas.
+        salida.append({'SKU': sku, 'metodo': met, 'mes': mes, 'pronostico': round(val),
+                       'p10': max(0, round(val + np.percentile(e, 10))),
+                       'p90': round(val + np.percentile(e, 90))})
+
+salida = pd.DataFrame(salida)
+print(salida.to_string(index=False))
