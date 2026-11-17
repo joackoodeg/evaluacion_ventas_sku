@@ -46,6 +46,11 @@ def grafico_mase(mase, archivo='grafico_mase.png'):
     ax.set_title('MASE del backtest (menor es mejor, 1.0 = naive estacional)', loc='left', fontsize=10)
     fig.tight_layout()
     fig.savefig(archivo, dpi=150)
+# El MASE de s_naive responde: ¿el naive se equivocó más en el período del backtest que en su historia?
+#- 1.0: igual que siempre.
+#- > 1: más que de costumbre; el período reciente fue más difícil.
+#- < 1: menos que de costumbre.
+
 
 # Animación del backtest: cada cuadro es un corte. La línea gris oscura es lo que el modelo "conoce" hasta ese corte,
 # la gris clara es el futuro que todavía no vio. La línea azul es lo que pronosticó para los H meses siguientes y los
@@ -53,6 +58,8 @@ def grafico_mase(mase, archivo='grafico_mase.png'):
 # anteriores quedan marcados en azul tenue, así se ve cómo se va armando el backtest.
 def grafico_animacion_backtest(piv, r, mase, archivo='animacion_backtest.gif', intervalo=2000):
     """Anima el backtest corte por corte con el método ganador de cada SKU. Devuelve la animación."""
+    #mejor_global = mase.mean(axis=1).idxmin()
+    #mejor = pd.Series(mejor_global, index=mase.columns)
     mejor = mase.idxmin(axis=0)          # método con menor MASE para cada SKU
     cortes = sorted(r.corte.unique())
     H = int(r.paso.max())

@@ -430,3 +430,60 @@ Para tener en cuenta:
 - Cada percentil sale de 15 errores. Es poco, así que el p10 y el p90 son estimaciones gruesas
 - La banda supone que el futuro se va a equivocar como el pasado. En D y E, donde la tendencia se dio vuelta, la cobertura dio alrededor del 53 %.
 - Las bandas son mensuales, no del total. No sumes los p90 de los 3 meses para el stock del trimestre: eso supone que te vas a equivocar al máximo los 3 meses a la vezr acumulado medido,como vimos en la tabla anterior.
+
+
+######################
+
+Incorporando el tracking signal:
+  === Tracking signal (combinacion, paso 1, últimos 6 orígenes) ===
+  SKU
+  ProductoA    3.44
+  ProductoB    2.89
+  ProductoC   -1.14
+  ProductoD   -4.53
+  ProductoE    1.68
+  Umbral |TS| > 4: ALARMA en ProductoD
+
+ANALISIS Y CONCLUSIONES: 
+Un TS persistentemente positivo significa quedarse corto todos los meses: en inventario eso
+-> no se compensa, se acumula y se come el stock de seguridad.
+
+La tabla de sesgo hacía algo parecido, pero promediando los 15 cortes. Este mira solo los últimos 6, así que reacciona a lo reciente.
+
+ts = suma de los últimos 6 errores (con signo) / promedio de esos 6 errores en valor absoluto (MAD)
+Por qué se divide por el MAD: así el número no depende del tamaño del producto. Un TS de 4 significa lo mismo en un SKU de 20 unidades por mes que en uno de 120.
+
+Por qué funciona:
+- Si los errores van para los dos lados, la suma se cancela y el TS queda cerca de 0. Es ruido normal.
+- Si van todos para el mismo lado, la suma se acumula y el TS se acerca a ±6, que es el máximo posible con K = 6.
+
+Signo: positivo = se viene quedando corto (riesgo de quiebre). Negativo = se viene pasando (sobra stock).
+
+┌─────┬─────────────────────────────────────┬────────┬──────┬──────────┐
+│ SKU │          últimos 6 errores          │  suma  │ MAD  │    TS    │
+├─────┼─────────────────────────────────────┼────────┼──────┼──────────┤
+│ D   │ 9.2, −40.5, 9.7, −51.3, −7.1, −37.2 │ −117.2 │ 25.8 │ −4.53    │
+├─────┼─────────────────────────────────────┼────────┼──────┼──────────┤
+│ A   │ 7.8, 9.5, 25.5, 6.0, −1.0, −12.2    │ 35.6   │ 10.3 │ 3.44     │
+├─────┼─────────────────────────────────────┼────────┼──────┼──────────┤
+│ B   │ −9.7, 65.9, 8.0, 16.5, −9.8, −12.1  │ 58.7   │ 20.3 │ 2.89     │
+├─────┼─────────────────────────────────────┼────────┼──────┼──────────┤
+│ E   │ 2.3, 31.6, −11.9, 22.6, 10.8, −26.0 │ 29.4   │ 17.5 │ 1.68     │
+├─────┼─────────────────────────────────────┼────────┼──────┼──────────┤
+│ C   │ −2.3, 10.8, −8.4, 2.8, −4.3, −4.9   │ −6.3   │ 5.6  │ −1.14    │
+└─────┴─────────────────────────────────────┴────────┴──────┴──────────┘
+
+Para qué se usa en producción
+
+Es la herramienta de monitoreo mensual: cada vez que corrés el modelo con datos nuevos, mirás el TS.
+
+- |TS| < 4: todo normal, el modelo sigue funcionando.
+- |TS| > 4: hay que revisar ese SKU. Puede que haya cambiado algo en el negocio (un cliente que se fue, un competidor, un cambio de precio) o que el método ya no le sirva. Las opciones son cambiar a un método más rápido, como hw o media_3, o ajustar el nivel a mano.
+
+El umbral de 4 es una convención. Con K = 6, el máximo posible es 6, así que 4 significa que la mayoría de los errores recientes van para el mismo lado.
+
+Límites
+
+- Calcula el TS para combinacion, no para el método ganador de cada SKU. Para D es el mismo, pero para A, B, C y E el TS de su método real podría ser distinto. Conviene calcularlo con el método que efectivamente usás para cada producto.
+- 6 errores es poco. Un solo mes raro, como el de B, lo mueve mucho. Antes de actuar, mirá los errores individuales como en la tabla de arriba.
+- Usa solo el paso 1, como explica el comentario del código. Si se mezclaran los 3 pasos, cada mes contaría 3 veces y el TS se inflaría sin que haya más evidencia.

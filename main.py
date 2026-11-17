@@ -15,7 +15,6 @@ MIN_TRAIN =36 # mínimo de meses de historia (3 años completos) antes de inicia
 AQUI = os.path.dirname(os.path.abspath(__file__))
 # -> Las rutas se resuelven respecto del archivo y no del directorio desde el que se ejecuta.
 
-
 # LOG: todo lo que se imprime va a la consola Y a un .txt, uno por corrida, para poder comparar corridas después.
 class Tee:
     def __init__(self, *destinos):
@@ -51,11 +50,12 @@ MESES = pd.date_range(piv.index[-1], periods=H + 1, freq='MS')[1:].strftime('%Y-
 
 
 # ESTACIONALIDAD COMPARTIDA:
-# Cada serie / su media, promediado por mes calendario
+# Cada serie / su media, promediado por mes calendariow
+# vuelve 12 números, uno por mes calendario, que dicen cuánto 
+# se vende ese mes comparado con un mes promedio, juntando todos los SKU
 def perfil_de(hist, grupo=None):
     # -> El perfil se estima a partir de los datos, así que dentro del backtest tiene 
     #    que construirse SOLO con la historia disponible hasta cada corte. 
-    #   Calcularlo una vez con los 53 meses sería fuga de información: el perfil de 2021 "sabría" cómo fue 2025.
     hist = hist if grupo is None else hist[grupo]
     norm = hist / hist.mean()
     # -> un índice relativo. 1.0 es un mes promedio para ese SKU y 1.3 es un 30 % por encima de su media
@@ -125,10 +125,12 @@ def metodos(y, mes, perfil, perfil_sel):
     aux = {"hw": hw, "sarima": sarima, "grupo": grupo, "grupo_sel": grupo_sel,
            "media_3": media_3, "media_12": media_12, "s_naive": s_naive, "combinacion": combinacion}
 
+    # No se pueden vender −3 unidades, y algunos métodos pueden dar negativos:
     return {k: np.clip(v, 0, None) for k, v in aux.items()}
+    # - > np.clip([42.1, 38.5, -3.2], 0, None)  →  [42.1, 38.5, 0.0]
 
-
-# BACKTEST: simulación del paso del tiempo.
+# BACKTEST: simulación del paso del tiempo
+# ->  el mismo mes se pronostica varias veces, cada vez con más información.
 filas = []
 for corte in range(MIN_TRAIN, len(piv) - H + 1):
     # -> Recorre los puntos de corte posibles: cada corte usa los primeros `corte` meses como entrenamiento y los H meses siguientes como prueba.
@@ -136,6 +138,8 @@ for corte in range(MIN_TRAIN, len(piv) - H + 1):
     # -> El perfil y la elección del grupo se arman una sola vez por corte, con los datos de ese corte y de ningún mes posterior.
     perfil, grupo_sel = perfil_de(hist), elegir_grupo(hist)
     perfil_s = perfil_de(hist, grupo_sel)
+    #   Es el mismo perfil de 12 números, pero armado solo con los SKU del grupo elegido. Así se pueden comparar los dos métodos: 
+    #   grupo usa el perfil de todos los SKU y grupo_sel usa el perfil de los SKU parecidos.
     mes = piv.index[corte - 1].month
     for sku in piv:
         v = piv[sku].values
@@ -148,17 +152,16 @@ for corte in range(MIN_TRAIN, len(piv) - H + 1):
                 # -> err = real - pronóstico (CON SIGNO): el signo sirve para medir sesgo, el valor absoluto para medir magnitud.
                 filas.append({"SKU": sku, "corte": corte, "metodo": met, "paso": paso + 1,
                               "err": real[paso] - fc[paso], "escala": escala})
-
 # -> Convierte la lista de filas en un DataFrame para poder agrupar y comparar los métodos. Se conserva `corte` para poder mirar la dispersión entre ventanas.
 r = pd.DataFrame(filas, columns=['SKU', 'corte', 'metodo', 'paso', 'err', 'escala'])
 r['abs'] = r.err.abs()
 r['mase'] = r['abs'] / r.escala
-
 cortes = r.corte.nunique()
 print(f'Backtest: {cortes} orígenes x {H} pasos x {piv.shape[1]} SKU = {cortes*H*piv.shape[1]} pronósticos por método')
 print(linea())
 
-# -> Cada celda resume el MASE promedio de un método para un SKU a lo largo de todos los cortes y pasos.
+# Para cada celda (método, SKU) promedia los 45 MASE de las 15 ventanas × 3 pasos 
+# -> Un solo método para los 3 meses.
 mase = r.pivot_table(index='metodo', columns='SKU', values='mase')
 print('=== MASE por método (menor es mejor; 1.0 = naive estacional) ===')
 print(mase.assign(PROMEDIO=mase.mean(axis=1)).sort_values('PROMEDIO').round(3), '\n')
@@ -175,19 +178,18 @@ print(r.groupby('SKU').escala.mean().round(1).to_string(), '\n')
 print('=== MASE por horizonte (promedio de los 5 SKU) ===')
 print(r.pivot_table(index='metodo', columns='paso', values='mase').round(3), '\n')
 
-# -> Por qué 15 orígenes y no 1: el error de una sola ventana es casi ruido.
+# Por qué 15 orígenes y no 1: el error de una sola ventana es casi ruido.
+# -> Con una sola ventana la medición podía caer en cualquier punto de este rango
 mejor_global = mase.mean(axis=1).idxmin()
 disp = r[r.metodo == mejor_global].groupby('corte')['abs'].mean()
 print(f'=== Dispersión entre ventanas ({mejor_global}, error absoluto medio por origen) ===')
 print(f'min {disp.min():.1f} | max {disp.max():.1f} | promedio {disp.mean():.1f} | desvío {disp.std():.1f}')
-print('Con una sola ventana la medición podía caer en cualquier punto de ese rango.\n')
 
 # -> Error CON SIGNO: mide sesgo. Dos modelos pueden tener el mismo MAE y uno quedarse corto siempre.
 #    En inventario eso no se compensa: se acumula y se come el stock de seguridad.
 print('=== Sesgo: error medio con signo (positivo = el modelo pronostica de menos) ===')
 print(r.pivot_table(index='metodo', columns='SKU', values='err').round(1), '\n')
 
-# -> Tracking signal: suma de los errores con signo de los últimos K orígenes, dividida por el MAD 
 
 # AGRUPAMIENTO: con quién conviene compartir estacionalidad
 norm_full = piv / piv.mean()
@@ -197,24 +199,7 @@ print(corr.round(2).to_string())
 print('\ncorrelación media de cada SKU con el resto:')
 print(((corr.sum() - 1) / (len(corr) - 1)).sort_values(ascending=False).round(2).to_string())
 print(f'\ngrupo elegido en el último corte: {elegir_grupo(piv)}')
-print('Efecto del agrupamiento, aislado en la tabla de MASE:')
-print('  media_12 -> grupo      = efecto de APLICAR un perfil estacional (mismo nivel, con y sin perfil)')
-print('  grupo    -> grupo_sel  = efecto de ELEGIR con quién agruparse')
 print(linea())
-
-# COBERTURA DEL INTERVALO
-# -> Un p10-p90 bien calibrado tiene que contener al real el 80 % de las veces. Medirlo con los mismos
-#    errores que construyeron el intervalo sería circular, así que se calibra con los primeros cortes
-#    y se mide en los últimos.
-corte_split = sorted(r.corte.unique())[int(cortes * 0.67)]
-cubiertos = []
-for (sku, paso), g in r[r.metodo == mejor_global].groupby(['SKU', 'paso']):
-    cal, test = g[g.corte < corte_split].err, g[g.corte >= corte_split].err
-    lo, hi = np.percentile(cal, 10), np.percentile(cal, 90)
-    cubiertos += [(lo <= e <= hi) for e in test]
-print(f'=== Cobertura del intervalo 80 % ({mejor_global}) ===')
-print(f'calibrado con los cortes < {corte_split}, medido en los posteriores: '
-      f'{100*np.mean(cubiertos):.0f} % de cobertura observada sobre {len(cubiertos)} casos (objetivo 80 %)\n')
 
 # ERROR ACUMULADO SOBRE EL HORIZONTE
 # -> Para dimensionar stock no importa el error de un mes sino el del acumulado de los H meses que
@@ -228,6 +213,20 @@ print(f'=== Error del acumulado de {H} meses ({mejor_global}) ===')
 print(comp.to_string())
 print(f'Si los errores fueran independientes el ratio sería raíz({H}) = {np.sqrt(H):.2f}; '
       f'si fueran idénticos sería {H}.\n')
+
+# -> Tracking signal: suma de los errores con signo de los últimos K orígenes, dividida por el MAD 
+#    (Desviación Absoluta Media de esos mismos orígenes).
+#    Se usa SOLO el paso 1, porque es el único horizonte con un pronóstico por mes: si se mezclaran
+#    los tres pasos, cada mes entraría tres veces y la suma se inflaría sin que haya más evidencia.
+#    Se divide por el MAD para que el umbral valga igual en un SKU de 40 unidades/mes y en uno de 180.
+K = 6
+h1 = r[(r.metodo == mejor_global) & (r.paso == 1)].sort_values('corte')
+ts = h1.groupby('SKU').apply(lambda g: g.err.tail(K).sum() / g['abs'].tail(K).mean()).round(2)
+print(f'=== Tracking signal ({mejor_global}, paso 1, últimos {K} orígenes) ===')
+print(ts.to_string())
+alarma = ts[ts.abs() > 4].index.tolist()
+print('Umbral |TS| > 4:', ('ALARMA en ' + ', '.join(alarma)) if alarma else 'ningún SKU lo supera.')
+print()
 
 # PRONOSTICOS FINALES
 perfil_f, grupo_f = perfil_de(piv), elegir_grupo(piv)
