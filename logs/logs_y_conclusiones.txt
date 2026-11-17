@@ -1,0 +1,432 @@
+SKU         ProductoA  ProductoB  ProductoC  ProductoD  ProductoE
+Fecha                                                            
+2021-01-01       34.0       23.0       18.0       42.0      101.0
+2021-02-01       45.0       37.0       24.0       42.0      112.0
+2021-03-01       58.0       37.0       26.0       61.0      104.0
+2021-04-01       27.0       46.0       17.0       76.0      103.0
+2021-05-01       54.0       11.0       16.0       83.0       88.0
+2021-06-01       38.0       19.0       27.0      161.0      109.0
+2021-07-01       38.0       61.0       18.0      152.0      101.0
+2021-08-01       24.0       13.0       34.0      115.0      110.0
+2021-09-01       43.0       11.0       35.0      157.0      103.0
+2021-10-01       84.0       26.0       42.0      113.0       98.0
+2021-11-01       40.0       51.0       32.0      100.0      133.0
+2021-12-01       60.0       17.0       26.0      106.0       90.0
+2022-01-01       37.0       10.0       12.0       66.0       79.0
+2022-02-01       25.0       48.0       18.0       76.0       81.0
+2022-03-01       36.0       43.0       18.0       95.0       84.0
+2022-04-01       37.0       51.0       22.0       88.0      123.0
+2022-05-01       57.0      100.0       19.0      100.0       87.0
+2022-06-01       45.0       21.0       32.0       84.0       94.0
+2022-07-01       54.0       31.0       33.0       17.0      109.0
+2022-08-01       41.0       36.0       14.0       34.0      122.0
+2022-09-01       28.0       18.0       16.0       22.0       72.0
+2022-10-01       50.0        8.0        6.0       24.0      103.0
+2022-11-01       49.0       21.0       15.0        3.0       51.0
+2022-12-01       37.0       10.0       23.0       22.0       74.0
+2023-01-01       34.0        7.0       21.0       99.0       75.0
+2023-02-01       13.0       64.0       16.0      113.0       90.0
+2023-03-01       19.0       35.0       29.0       10.0       59.0
+2023-04-01       36.0       19.0       37.0       28.0       70.0
+2023-05-01       40.0       35.0       43.0       16.0       83.0
+2023-06-01       61.0       75.0       32.0       23.0       90.0
+2023-07-01       63.0       27.0       17.0      103.0      201.0
+2023-08-01       53.0       53.0       24.0      129.0      190.0
+2023-09-01       63.0       33.0       23.0       71.0      191.0
+2023-10-01       35.0       27.0       29.0      124.0      203.0
+2023-11-01       58.0       31.0       38.0      150.0      156.0
+2023-12-01       30.0       41.0        9.0       99.0      126.0
+2024-01-01       37.0       23.0       23.0       81.0      139.0
+2024-02-01       23.0       30.0       14.0      108.0       93.0
+2024-03-01       19.0       28.0       10.0      143.0      136.0
+2024-04-01       18.0       62.0       17.0       75.0      119.0
+2024-05-01       27.0      103.0       18.0       80.0      129.0
+2024-06-01       25.0       27.0       30.0       60.0      141.0
+2024-07-01       50.0       46.0       39.0      125.0      169.0
+2024-08-01       55.0       73.0       16.0       95.0      187.0
+2024-09-01       46.0       80.0       23.0       66.0      215.0
+2024-10-01       50.0       37.0       21.0       97.0      186.0
+2024-11-01       52.0      113.0       33.0       49.0      195.0
+2024-12-01       63.0       57.0       15.0       84.0      147.0
+2025-01-01       45.0       63.0       22.0       30.0      169.0
+2025-02-01       33.0       49.0       16.0       59.0      160.0
+2025-03-01       23.0       42.0       16.0       25.0      130.0
+2025-04-01       42.0       61.0       27.0       66.0      139.0
+2025-05-01       32.0       53.0       29.0       65.0      116.0
+--------------------------------
+Backtest: 15 orígenes x 3 pasos x 5 SKU = 225 pronósticos por método
+--------------------------------
+=== MASE por método (menor es mejor; 1.0 = naive estacional) ===
+SKU          ProductoA  ProductoB  ProductoC  ProductoD  ProductoE  PROMEDIO
+metodo                                                                      
+combinacion      0.919      0.923      0.539      0.379      0.534     0.659
+grupo_sel        0.949      0.885      0.518      0.447      0.528     0.666
+hw               0.927      1.084      0.497      0.435      0.531     0.695
+sarima           0.860      0.964      0.664      0.458      0.708     0.731
+grupo            1.098      0.906      0.559      0.418      0.689     0.734
+media_12         1.105      0.905      0.610      0.444      0.613     0.735
+media_3          1.055      0.929      0.671      0.381      0.798     0.767
+s_naive          1.003      1.366      0.763      0.732      0.885     0.950 
+
+=== MAE en unidades (el numerador del MASE, para saber si el modelo es bueno o el baseline es malo) ===
+SKU          ProductoA  ProductoB  ProductoC  ProductoD  ProductoE
+metodo                                                            
+combinacion       12.3       21.6        6.5       25.1       20.4
+grupo             14.7       21.2        6.7       27.6       26.2
+grupo_sel         12.7       20.7        6.2       29.6       20.1
+hw                12.4       25.7        6.0       28.8       20.1
+media_12          14.8       21.1        7.3       29.1       23.4
+media_3           14.2       21.9        8.1       25.3       30.5
+s_naive           13.4       31.9        9.1       48.2       33.5
+sarima            11.5       22.5        7.9       30.7       27.1 
+
+escala del naive estacional por SKU (el denominador):
+SKU
+ProductoA    13.4
+ProductoB    23.8
+ProductoC    11.9
+ProductoD    66.2
+ProductoE    38.0 
+
+# CONCLUSIONES
+ -> el MASE de D es engañoso
+ -> D tiene un MASE bajo porque la vara es muy fácil de superar, no porque el pronóstico sea bueno
+
+- MASE sirve para elegir método dentro de un mismo SKU. Ahí la escala es la misma para todos los métodos, así que la comparación es justa.
+- MAE / venta media sirve para saber qué tan bueno es el pronóstico y para comparar SKU entre sí. 
+  -> Con esa medida, D es el más difícil y el que más stock de seguridad se va a necesitar.
+
+=== MASE por horizonte (promedio de los 5 SKU) ===
+paso             1      2      3
+metodo                          
+combinacion  0.653  0.657  0.665
+grupo        0.761  0.730  0.711
+grupo_sel    0.677  0.665  0.654
+hw           0.697  0.678  0.709
+media_12     0.752  0.736  0.718
+media_3      0.704  0.762  0.834
+s_naive      0.942  0.945  0.963
+sarima       0.706  0.735  0.752 
+
+# CONCLUSIONES:
+Los que empeoran con el horizonte: 
+  - MEDIA_3: Usa el nivel de los ultimos 3 meses y no tiene estacionalidad. Sirve para el mes siguiente, pero a 3 meses de ese nivel queda viejo
+  - SARIMA: El termino AUTOREGRESIVO usa el ULTIMO DATO, y entonces su efectova diluyendose paso a paso
+
+Los que se mantienen o hasta mejoran:
+Estos métodos no dependen del último mes: usan el promedio de 12 meses más un perfil fijo. Para ellos, pronosticar a 1 mes o a 3 es básicamente la misma apuesta, así que no tienen por qué degradarse.
+Que MEJOREN un poco hacia el paso 3 probablemente sea RUIDO
+
+Combinación: la más estable
+Es la mejor en los pasos 1 y 2 y casi empata en el 3 (0.665 contra 0.654). 
+Además apenas se mueve con el horizonte. 
+Es lo típico de combinar métodos: no siempre gana, pero nunca sale muy mal, 
+porque los errores de los distintos métodos se compensan entre sí.
+
+Lo más interesante: elegir el grupo importa más que aplicar estacionalidad
+- media_12 contra grupo: aplicar un perfil estacional promediado entre todos los SKU no aporta nada. Mete a ProductoB, que tiene una estacionalidad distinta, y el perfil compartido termina siendo una mezcla que no le sirve a nadie.
+- grupo contra grupo_sel: al sacar a B del perfil, el error baja alrededor de un 10 %.
+
+--> Conclusión: la estacionalidad compartida sirve solo si agrupás bien. 
+
+=== Dispersión entre ventanas (combinacion, error absoluto medio por origen) ===
+min 10.4 | max 22.4 | promedio 17.2 | desvío 3.4
+Con una sola ventana la medición podía caer en cualquier punto de ese rango.
+
+=== Sesgo: error medio con signo (positivo = el modelo pronostica de menos) ===
+SKU          ProductoA  ProductoB  ProductoC  ProductoD  ProductoE
+metodo                                                            
+combinacion       -0.4       13.5       -1.0       -8.6        9.1
+grupo             -0.2       13.7       -1.0      -12.4       11.8
+grupo_sel         -0.0       13.7       -0.9      -12.8       11.6
+hw                 0.9       11.1       -1.0      -11.3        2.2
+media_12          -1.2       12.0       -1.6      -14.4        7.9
+media_3           -0.9        3.9       -0.2      -12.7        0.2
+s_naive           -0.4       19.2       -2.8       -7.8       25.2
+sarima            -1.4       17.3       -0.6        3.9       14.6 
+
+# CONCLUSIONES:
+ - B CRECE
+ - D CAE
+ - A ESTABLE
+ - C CAE Y DESPUES SUBE
+
+DE TODAS FORMAS Para saber si un producto crece, la medida correcta es la variación interanual directa 
+El sesgo sirve para otra cosa: saber qué métodos reaccionan tarde a esos cambios
+
+->>>> reaccionar rápido baja el sesgo pero sube el ruido
+
+┌───────────────┬──────┬───────────┬──────────────────────┬───────────┐
+│    método     │  B   │     E     │  qué tan atrás mira  │ velocidad │
+├───────────────┼──────┼───────────┼──────────────────────┼───────────┤
+│ media_3       │ 3.9  │ 0.2       │ últimos 3 meses      │ rápido    │
+├───────────────┼──────┼───────────┼──────────────────────┼───────────┤
+│ hw            │ 11.1 │ 2.2       │ nivel que se         │ rápido    │
+│               │      │           │ actualiza cada mes   │           │
+├───────────────┼──────┼───────────┼──────────────────────┼───────────┤
+│ media_12      │ 12.0 │ 7.9       │ últimos 12 meses     │ medio     │
+├───────────────┼──────┼───────────┼──────────────────────┼───────────┤
+│ combinacion   │ 13.5 │ 9.1       │ mezcla               │ medio     │
+├───────────────┼──────┼───────────┼──────────────────────┼───────────┤
+│ grupo /       │ 13.7 │ 11.6–11.8 │ últimos 12 meses ×   │ medio     │
+│ grupo_sel     │      │           │ perfil               │           │
+├───────────────┼──────┼───────────┼──────────────────────┼───────────┤
+│ sarima        │ 17.3 │ 14.6      │ toda la historia     │ lento     │
+├───────────────┼──────┼───────────┼──────────────────────┼───────────┤
+│ s_naive       │ 19.2 │ 25.2      │ exactamente 12 meses │ lento     │
+│               │      │           │  atrás               │           │
+└───────────────┴──────┴───────────┴──────────────────────┴───────────┘
+
+"Dos modelos pueden tener el mismo MAE y uno quedarse corto siempre"
+
+┌────────────────────────┬──────┬──────┬───────┐
+│       ProductoE        │ MASE │ MAE  │ sesgo │
+├────────────────────────┼──────┼──────┼───────┤
+│ grupo_sel (el elegido) │ 0.53 │ 20.1 │ +11.6 │
+├────────────────────────┼──────┼──────┼───────┤
+│ hw                     │ 0.53 │ 20.1 │ +2.2  │
+└────────────────────────┴──────┴──────┴───────┘
+Tienen el mismo error y un sesgo cinco veces distinto. 
+Para inventario, hw es claramente mejor: con grupo_sel te quedás corto unas 12 unidades por mes, 
+y en un horizonte de 3 meses eso suma alrededor de 35 unidades de faltante. 
+El código elige grupo_sel porque gana por centésimas que no se ven en el redondeo.
+
+El intervalo p10-p90 ya compensa en parte
+El intervalo se arma con pronóstico + percentiles(err). 
+Si en B los errores son mayormente positivos, la banda queda corrida hacia arriba respecto del pronóstico. 
+Si usás el p90 para dimensionar stock, ya estás cubriendo buena parte del sesgo. 
+-> El que queda corto es el pronóstico puntual.
+
+OPCIONES:
+1-  Desempatar por sesgo. Cuando dos métodos están a menos de unas 0.02 de MASE, elegir el de menor |sesgo|. Con eso E pasa a hw y B probablemente a media_3.
+2 - Mirar el sesgo por corte, no solo el promedio, para ver si es persistente o lo producen unas pocas ventanas -> tracking signal {VER}
+
+=== Correlación entre perfiles estacionales ===
+SKU        ProductoA  ProductoB  ProductoC  ProductoD  ProductoE
+SKU                                                             
+ProductoA       1.00      -0.19       0.52       0.60       0.67
+ProductoB      -0.19       1.00       0.31      -0.13      -0.18
+ProductoC       0.52       0.31       1.00       0.28       0.31
+ProductoD       0.60      -0.13       0.28       1.00       0.74
+ProductoE       0.67      -0.18       0.31       0.74       1.00
+
+CONCLUSIONES
+- Nucleo claro en A, D y E
+- C esta cerca de eso
+- B no encaja con nadie
+
+PORQUE? (igual ojo porque con solo 12 valores la correlacion atenta a ser ruidosa)
+ B tiene el peor MASE de s_naive de todos los SKU (1.37): copiar el año anterior le hace daño. 
+ Eso indica que B no tiene una estacionalidad estable.
+
+ES IMPORTANTE SABER QUE: La correlación mide la forma, no la intensidad
+Dos SKU pueden correlacionar 0.74 aunque uno tenga picos del 60 % y el otro del 15 %. 
+Como grupo_sel usa un único perfil promediado, a D, que tiene oscilaciones enormes, 
+le aplica una estacionalidad demasiado suave, y a A le podría aplicar una demasiado fuerte. 
+-> La correlación alta NO garantiza que el perfil compartido le sirva a cada SKU por igual.
+
+Notar ademas que lo que imprime el log está calculado con toda la historia y sirve como diagnóstico. 
+Dentro del backtest, el grupo se elige de nuevo en cada corte con los datos disponibles hasta ese momento, 
+así que en algún corte temprano el grupo pudo ser OTRO.
+
+correlación media de cada SKU con el resto:
+SKU
+ProductoA    0.40
+ProductoE    0.38
+ProductoD    0.37
+ProductoC    0.35
+ProductoB   -0.05
+
+grupo elegido en el último corte: ['ProductoA', 'ProductoC', 'ProductoD', 'ProductoE']
+Efecto del agrupamiento, aislado en la tabla de MASE:
+  media_12 -> grupo      = efecto de APLICAR un perfil estacional (mismo nivel, con y sin perfil)
+  grupo    -> grupo_sel  = efecto de ELEGIR con quién agruparse
+--------------------------------
+
+
+=== Cobertura del intervalo 80 % (combinacion) ===
+calibrado con los cortes < 46, medido en los posteriores: 75 % de cobertura observada sobre 75 casos (objetivo 80 %)
+
+CONCLUSIONES Y ANALISIS:
+
+El intervalo p10-p90 se arma con los errores del backtest. Para no hacer trampa, el código lo calibra con los cortes 36 a 45 (10 errores por SKU y paso) y lo prueba en los cortes 46 a 50, que no usó para calibrar. Si está bien calibrado, el valor real tendría que caer:
+- dentro de la banda el 80 % de las veces,
+- por arriba el 10 % (vendiste más que el p90),
+- por abajo el 10 % (vendiste menos que el p10).
+
+El desglose
+
+┌──────────────────┬───────────┬────────────────┬───────────────┐
+│                  │  dentro   │ arriba del p90 │ abajo del p10 │
+├──────────────────┼───────────┼────────────────┼───────────────┤
+│ objetivo         │ 80 %      │ 10 %           │ 10 %          │
+├──────────────────┼───────────┼────────────────┼───────────────┤
+│ total (75 casos) │ 75 % (56) │ 7 % (5)        │ 19 % (14)     │
+└──────────────────┴───────────┴────────────────┴───────────────┘
+
+┌───────────┬────────────────┬────────┬───────┐
+│    SKU    │ dentro (de 15) │ arriba │ abajo │
+├───────────┼────────────────┼────────┼───────┤
+│ ProductoA │ 13 (87 %)      │ 2      │ 0     │
+├───────────┼────────────────┼────────┼───────┤
+│ ProductoB │ 13 (87 %)      │ 1      │ 1     │
+├───────────┼────────────────┼────────┼───────┤
+│ ProductoC │ 14 (93 %)      │ 1      │ 0     │
+├───────────┼────────────────┼────────┼───────┤
+│ ProductoD │ 8 (53 %)       │ 0      │ 7     │
+├───────────┼────────────────┼────────┼───────┤
+│ ProductoE │ 8 (53 %)       │ 1      │ 6     │
+└───────────┴────────────────┴────────┴───────┘
+
+En D y E las fallas van todas para el mismo lado. 
+El valor real cayó por debajo de la banda: se vendió menos de lo que el p10 decía que era el mínimo razonable.
+ Por qué pasa: cambió la tendencia entre la calibración y la prueba.
+- Los cortes de calibración pronostican aproximadamente 2024. En ese período D y E venían creciendo, 
+  los modelos se quedaban cortos y los errores eran positivos. La banda se calibró corrida hacia arriba.
+- Los cortes de prueba pronostican desde fines de 2024 hasta mayo 2025. 
+  En ese período D cayó un 31 % y E frenó su crecimiento, y las ventas reales quedaron por debajo de esa banda corrida.
+
+-> OBVIAMENTE: un intervalo armado con errores pasados supone que el futuro se va a equivocar igual que el pasado
+
+Consecuencia para stock. Si dimensionas D y E con este intervalo, habría sobrado stock.
+
+Cuánto confiar en el número -> Respuesta AI
+- La muestra es chica. Son 75 casos y solo 15 por SKU. Además, cada percentil sale de 10 errores, y un p10 calculado con 10 datos es casi "el segundo valor más chico", así que es muy inestable.
+- Los casos no son independientes. Cortes vecinos pronostican meses que se superponen, así que en la práctica hay menos información que 75 casos.
+- No mide exactamente el intervalo que usás. La cobertura se calcula para combinacion (el mejor método global), pero el pronóstico final usa el ganador de cada SKU (hw, grupo_sel, etc.) y calibra con los 15 cortes, no con 10. Es una buena aproximación, no una validación exacta.
+
+Qué mejoraría -> Respuesta AI
+1. Separar el sesgo del ancho. Armar la banda con los errores centrados (err - err.mean()) y tratar el sesgo aparte. Así, si la tendencia se da vuelta, la banda no queda apuntando para el lado equivocado.
+2. Juntar más datos por percentil. Usar errores relativos (err / nivel) y juntar los 3 pasos, o SKU parecidos. Con 30 o 45 errores por percentil, en lugar de 10, el p10 y el p90 son mucho más estables.
+3. Dar más peso a los errores recientes, para que la banda se adapte antes a un cambio de régimen.
+
+=== Error del acumulado de 3 meses (combinacion) ===
+           error mensual  error acumulado 3m  ratio
+SKU                                                
+ProductoA           12.3                31.2   2.54
+ProductoB           21.6                49.1   2.28
+ProductoC            6.5                11.8   1.82
+ProductoD           25.1                56.2   2.24
+ProductoE           20.4                48.9   2.40
+Si los errores fueran independientes el ratio sería raíz(3) = 1.73; si fueran idénticos sería 3.
+
+# ANALISIS
+Esta tabla responde una pregunta práctica para el stock: si te equivocás unas X unidades por mes, ¿cuánto te equivocás en el total de los 3 meses?
+
+La idea: Al sumar 3 meses, los errores pueden compensarse o acumularse:
+
+Se compensan:   +10, −8, +5   → total +7     (un mes tapa al otro)
+Se acumulan:    +10, +9, +11  → total +30    (siempre para el mismo lado)
+
+Los dos extremos teóricos:
+- Errores independientes (cada mes es un error al azar): se compensan en parte y el error del total es ≈ √3 = 1.73 veces el mensual.
+- Errores idénticos (siempre el mismo desvío): se suman enteros y el error del total es 3 veces el mensual.
+
+Por qué importa para el stock
+
+La fórmula clásica de stock de seguridad supone errores independientes: error del período = error mensual × √(meses). 
+Con los datos, esa fórmula subestima:
+
+┌───────────┬──────────────────────┬─────────────────────┬────────────┐
+│    SKU    │   con la fórmula     │    medido en el     │            │
+│           │       (×1.73)        │      backtest       │  faltaría  │
+├───────────┼──────────────────────┼─────────────────────┼────────────┤
+│ ProductoA │ 21.3                 │ 31.2                │ −32 %      │
+├───────────┼──────────────────────┼─────────────────────┼────────────┤
+│ ProductoB │ 37.4                 │ 49.1                │ −24 %      │
+├───────────┼──────────────────────┼─────────────────────┼────────────┤
+│ ProductoC │ 11.2                 │ 11.8                │ −5 %       │
+├───────────┼──────────────────────┼─────────────────────┼────────────┤
+│ ProductoD │ 43.4                 │ 56.2                │ −23 %      │
+├───────────┼──────────────────────┼─────────────────────┼────────────┤
+│ ProductoE │ 35.3                 │ 48.9                │ −28 %      │
+└───────────┴──────────────────────┴─────────────────────┴────────────┘
+
+Notar que:
+- Muestra chica: estimacion gruesa
+- Calculado para combinacion, por loque para sku que usan otro metodo
+  el ratio puede ser algo distinto
+
+=== Pronóstico (intervalo 80 % empírico, de los errores del backtest) ===
+fecha_corrida       SKU      metodo     mes  paso  pronostico  p10  p90
+      2025-05 ProductoA      sarima 2025-06     1          35   22   49
+      2025-05 ProductoA      sarima 2025-07     2          40   23   56
+      2025-05 ProductoA      sarima 2025-08     3          42   23   56
+      2025-05 ProductoB   grupo_sel 2025-06     1          62   47  112
+      2025-05 ProductoB   grupo_sel 2025-07     2          71   58  121
+      2025-05 ProductoB   grupo_sel 2025-08     3          65   55  118
+      2025-05 ProductoC          hw 2025-06     1          30   22   36
+      2025-05 ProductoC          hw 2025-07     2          26   18   32
+      2025-05 ProductoC          hw 2025-08     3          22   13   27
+      2025-05 ProductoD combinacion 2025-06     1          72   30  109
+      2025-05 ProductoD combinacion 2025-07     2          73   31  102
+      2025-05 ProductoD combinacion 2025-08     3          72   23   94
+      2025-05 ProductoE   grupo_sel 2025-06     1         174  158  212
+      2025-05 ProductoE   grupo_sel 2025-07     2         198  187  236
+      2025-05 ProductoE   grupo_sel 2025-08     3         181  171  221
+
+Guardado en pronostico.csv y backtest.csv
+
+Paso 1. Perfil y grupo con TODOS los datos
+Es lo mismo que se hacía en cada corte, pero ahora con piv completo, los 53 meses. En el backtest eso estaba prohibido por la fuga de información. Acá no hay futuro escondido que "espiar", así que conviene usar todo lo que tenés.
+
+Paso 2. Recorrer el ganador de cada SKU
+
+ProductoA → sarima      ProductoB → grupo_sel     ProductoC → hw
+ProductoD → combinacion ProductoE → grupo_sel
+
+Paso 3. Reentrenar y pronosticar
+NOTA: Correr los 8 para usar 1 desperdicia algo de cálculo, sobre todo hw y sarima, 
+que son los que más tardan. Con 5 SKU no importa, pero si en algún momento tenés cientos de 
+productos convendría calcular solo el método ganador.
+
+Paso 4. Recorrer los 3 futuro real: junio, julio y agosto 2025.
+
+for paso, (mes, val) in enumerate(zip(MESES, fc), 1):
+
+zip empareja cada mes con su valor pronosticado y enumerate(..., 1) los numera desde 1:
+
+paso=1, mes='2025-06', val=35
+paso=2, mes='2025-07', val=40
+paso=3, mes='2025-08', val=42
+
+Paso 5. Buscar cómo se equivocó ese método en el pasado
+
+Del backtest se filtran los errores de ese SKU, con ese método y a esa distancia.
+"Esa distancia" es el paso: cuántos meses hacia adelante está el mes pronosticado, contando desde el último dato conocido.
+
+último dato conocido: mayo 2025
+                            │
+                            ▼
+   ... abr   may │  jun     jul     ago
+                 │ paso 1  paso 2  paso 3
+                 │ (1 mes) (2 meses)(3 meses adelante)
+
+- Para la banda de junio (paso 1) se toman los 15 errores de la columna "paso 1" de todos los meses.
+- Para la banda de agosto (paso 3) se toman los 15 errores de la columna "paso 3" de todos los meses.
+
+Son 15 números, uno por corte. Para ProductoA, sarima, paso 1:
+[-14.8, -12.9, -12.5, -12.1, -11.9, -7.8, -7.7, -3.9, -2.9, 0.8, 4.0, 10.9, 11.2, 16.4, 21.1]                                                   
+
+Paso 6. Armar el intervalo
+
+'p10': max(0, round(val + np.percentile(e, 10))),
+'p90': round(val + np.percentile(e, 90))
+
+Como err = real − pronóstico, se cumple que real = pronóstico + err. La idea es: si este mes me equivoco como me equivoqué en el pasado, ¿dónde caería el valor real?
+
+percentil 10 de los errores = −12.7   → p10 = 35 − 12.7 = 22
+percentil 90 de los errores = +14.3   → p90 = 35 + 14.3 = 49
+
+Resultado para junio 2025: pronóstico 35, con un 80 % de chances de que el real esté entre 22 y 49.
+- El intervalo puede ser asimétrico. Si un método suele quedarse corto, sus errores son mayormente positivos y la banda queda corrida hacia arriba del pronóstico. Así el intervalo ya incorpora el sesgo.
+- max(0, ...) evita un p10 negativo, porque no se pueden vender −5 unidades.
+- Cada paso usa sus propios errores. El paso 3 usa los errores de 3 meses adelante, que suelen ser más grandes; por eso la banda de agosto (23 a 56) es más ancha que la de junio (22 a 49).
+
+Paso 7. Guardar la fila
+
+Para tener en cuenta:
+
+- Cada percentil sale de 15 errores. Es poco, así que el p10 y el p90 son estimaciones gruesas
+- La banda supone que el futuro se va a equivocar como el pasado. En D y E, donde la tendencia se dio vuelta, la cobertura dio alrededor del 53 %.
+- Las bandas son mensuales, no del total. No sumes los p90 de los 3 meses para el stock del trimestre: eso supone que te vas a equivocar al máximo los 3 meses a la vezr acumulado medido,como vimos en la tabla anterior.
